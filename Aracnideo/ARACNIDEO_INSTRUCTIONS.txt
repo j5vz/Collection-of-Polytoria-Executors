@@ -1,5 +1,5 @@
-How can i use Arachnideo? Well, you're in the right file.
-Due to github not letting us upload more than 100mb on their site, we have to rely on Arachnideo's own repository.
+How can i use Aracnideo? Well, you're in the right file.
+Due to github not letting us upload more than 25mb on their site, we have to rely on Aracnideo's own repository.
 
 Paste the link below on your Browser's URL bar:
 https://github.com/arocimorr/Aracnideo-Executor/releases/download/Aracedeo/AracnideoExecutorUPDATED.exe
