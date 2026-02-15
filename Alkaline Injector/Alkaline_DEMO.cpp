@@ -1,3 +1,5 @@
+// I doubt that Alkaline would currently work, so I advise that you give me some time to figure this injection BS out and make Alkaline open-sourced for everyone.
+
 #include <iostream>
 #include <windows.h>
 #include <tlhelp32.h>
