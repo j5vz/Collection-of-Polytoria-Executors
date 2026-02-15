@@ -1,0 +1,49 @@
+// I doubt that Alkaline would currently work, so I advise that you give me some time to figure this injection BS out and make Alkaline open-sourced for everyone.
+
+#include <windows.h>
+#include <iostream>
+#include <string>
+#include <thread>
+
+void set_title(const char* title) {
+    SetConsoleTitleA(title);
+}
+
+void log(const std::string& prefix, const std::string& message, WORD color) {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    std::cout << "[";
+    SetConsoleTextAttribute(hConsole, color);
+    std::cout << " " << prefix << " ";
+    SetConsoleTextAttribute(hConsole, 7);
+    std::cout << "] " << message << std::endl;
+}
+
+void main_thread() {
+    AllocConsole();
+    FILE* f;
+    freopen_s(&f, "CONOUT$", "w", stdout);
+
+    set_title("Alkaline is now injecting.");
+
+    log("[ STATUS ]", "Alkaline successfully attached.", 11);
+    log("[ INFO ]", "Doing internal checks...", 14);
+    log("[ SUCCESS ]", "Injected via Alkaline successfully.", 10);
+
+    while (true) {
+        if (GetAsyncKeyState(VK_END) & 1) break;
+        Sleep(10);
+    }
+
+    if (f) fclose(f);
+    FreeConsole();
+    FreeLibraryAndExitThread(GetModuleHandleA(NULL), 0);
+}
+
+BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID reserved) {
+    if (reason == DLL_PROCESS_ATTACH) {
+        DisableThreadLibraryCalls(hModule);
+        HANDLE hThread = CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)main_thread, nullptr, 0, nullptr);
+        if (hThread) CloseHandle(hThread);
+    }
+    return TRUE;
+}
