@@ -1,7 +1,8 @@
 #include <windows.h>
 #include <iostream>
 #include <string>
-#include <thread>
+#include <tlhelp32.h>
+#include <vector>
 
 void set_title(const char* title) {
     SetConsoleTitleA(title);
@@ -16,6 +17,59 @@ void log(const std::string& prefix, const std::string& message, WORD color) {
     std::cout << "] " << message << std::endl;
 }
 
+DWORD get_proc_id(const char* name) {
+    DWORD id = 0;
+    HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (snap != INVALID_HANDLE_VALUE) {
+        PROCESSENTRY32 entry;
+        entry.dwSize = sizeof(entry);
+        if (Process32First(snap, &entry)) {
+            do {
+                if (_stricmp(entry.szExeFile, name) == 0) {
+                    id = entry.th32ProcessID;
+                    break;
+                }
+            } while (Process32Next(snap, &entry));
+        }
+        CloseHandle(snap);
+    }
+    return id;
+}
+
+bool perform_injection(DWORD pid, const char* path) {
+    HANDLE proc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+    if (!proc) {
+        log("[ ERROR ]", "OpenProcess failed. Code: " + std::to_string(GetLastError()), 12);
+        return false;
+    }
+
+    void* alloc = VirtualAllocEx(proc, nullptr, MAX_PATH, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    if (!alloc) {
+        log("[ ERROR ]", "VirtualAllocEx failed. Code: " + std::to_string(GetLastError()), 12);
+        CloseHandle(proc);
+        return false;
+    }
+
+    if (!WriteProcessMemory(proc, alloc, path, strlen(path) + 1, nullptr)) {
+        log("[ ERROR ]", "WriteProcessMemory failed. Code: " + std::to_string(GetLastError()), 12);
+        VirtualFreeEx(proc, alloc, 0, MEM_RELEASE);
+        CloseHandle(proc);
+        return false;
+    }
+
+    HANDLE thread = CreateRemoteThread(proc, nullptr, 0, (LPTHREAD_START_ROUTINE)LoadLibraryA, alloc, 0, nullptr);
+    if (!thread) {
+        log("[ ERROR ]", "CreateRemoteThread failed. Code: " + std::to_string(GetLastError()), 12);
+        VirtualFreeEx(proc, alloc, 0, MEM_RELEASE);
+        CloseHandle(proc);
+        return false;
+    }
+
+    CloseHandle(thread);
+    CloseHandle(proc);
+    return true;
+}
+
 void main_thread() {
     AllocConsole();
     FILE* f;
@@ -23,25 +77,33 @@ void main_thread() {
 
     set_title("Alkaline is now injecting.");
 
-    log("[ STATUS ]", "Alkaline successfully attached.", 11);
-    log("[ INFO ]", "Doing internal checks...", 14);
-    log("[ SUCCESS ]", "Injected via Alkaline successfully.", 10);
+    char dll_path[MAX_PATH];
+    GetFullPathNameA("payload.dll", MAX_PATH, dll_path, nullptr);
 
-    while (true) {
-        if (GetAsyncKeyState(VK_END) & 1) break;
-        Sleep(10);
+    log("[ STATUS ]", "Searching for Polytoria.exe...", 11);
+
+    DWORD pid = 0;
+    while (!pid) {
+        pid = get_proc_id("Polytoria.exe");
+        if (!pid) Sleep(500);
     }
 
+    log("[ FOUND ]", "Target identified: " + std::to_string(pid), 10);
+    log("[ INFO ]", "Injecting payload.dll...", 14);
+
+    if (perform_injection(pid, dll_path)) {
+        log("SUCCESS", "Injected via Alkaline successfully.", 10);
+    }
+
+    Sleep(5000);
     if (f) fclose(f);
     FreeConsole();
-    FreeLibraryAndExitThread(GetModuleHandleA(NULL), 0);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID reserved) {
     if (reason == DLL_PROCESS_ATTACH) {
         DisableThreadLibraryCalls(hModule);
-        HANDLE hThread = CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)main_thread, nullptr, 0, nullptr);
-        if (hThread) CloseHandle(hThread);
+        CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)main_thread, nullptr, 0, nullptr);
     }
     return TRUE;
 }
