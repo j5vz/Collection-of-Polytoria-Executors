@@ -2,6 +2,6 @@ POLYHACK CREDITS
 THANKS TO FOENEM LEAKING POLYHACK
 
 ElCapor has made this executor sometime after Polytoria has gotten popular (around 12th of february or so). PolyHack is considered the first executor in Polytoria history.
-The Team behind PolyHack is notoriously known for being lazy and huge. As an example, Elytra was made by one person, meanwhile PolyHack was made by 10.
+The Team behind PolyHack is notoriously known for being huge and slow (coming from someone i know, do not judge me if this info is false). As an example, Elytra was made by one person, meanwhile PolyHack was made by 10.
 
 @j5vz [Nexus] for additional info via discord.
