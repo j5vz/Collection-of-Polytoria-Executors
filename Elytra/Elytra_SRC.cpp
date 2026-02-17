@@ -1,3 +1,5 @@
+// Everything down below is the leaked Elytra source code by ElCapor. Completely unedited.
+
 // TODO: Save script button
 // TODO: Script source viewer and changer (create separate window to edit and shit)
 
@@ -5167,3 +5169,4 @@ BOOL APIENTRY DllMain(HMODULE m, DWORD r, LPVOID) {
     }
     return TRUE;
 }
+
