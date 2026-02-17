@@ -4,6 +4,6 @@ THANKS TO NEXUS FOR PUTTING ELYTRA HERE
 Elytra is a new executor for Polytoria that has good developers and quick updates. One of the most reccomended executors out there would be Elytra.
 We have included Extreme Injector in the file so that it is easier for you to run the DLL file.
 
-ELYTRA V1.4.1
+ELYTRA V1.4.1 /// NO MORE UPDATES FROM HERE
 
 @j5vz [Nexus] for additional info via discord.
